@@ -1,0 +1,58 @@
+#! /bin/python
+
+import argparse
+import sys
+
+## ____ HELPERS ______________________________
+def __to_yaml__(data):
+    '''
+    return cities data dict object as yaml
+    '''
+    yaml = "cities:\n"
+    for element in data["cities"]:
+        yaml += "- " + '  '.join(map(lambda prop_value: "{}: {}\n".format(prop_value[0],prop_value[1]),element.items()))
+    return yaml
+
+def __to_json__(data):
+    '''
+    return cities data dict object as json
+    '''
+    import json
+    return json.dumps(data)
+#_________________________________________________--
+#______________ Arguments _______________________
+argument_parser = argparse.ArgumentParser()
+
+argument_parser.add_argument("format", default="json", choices=["json","yaml"],
+    help="One of the formats available")
+
+argument_parser.add_argument("-i", "--input", required=True,
+    help="Filename to read from")
+#_________________________________________________
+args = vars(argument_parser.parse_args())
+data_format = args["format"]
+
+converters = {
+    "json": __to_json__,
+    "yaml": __to_yaml__
+}
+
+try:
+    csv_file = open(args['input'], "r")
+except FileNotFoundError:
+    print("No such file or directory: {}".format(args['input']))
+    sys.exit(29)
+
+# Read data from file and store it.
+data_dict = { "cities": [] }
+for line in csv_file.readlines():
+    data = line.rstrip().split(";") 
+    data_dict['cities'].append({'province':data[0],
+        "city":data[1],
+        "school":data[2],
+        "level":data[3]})
+
+csv_file.close()
+
+# finally print converted data according to format parameter
+print(converters[data_format](data_dict))

@@ -1,0 +1,76 @@
+#! /bin/python
+## __________________ CONSTANTS ________________
+PROVINCES = [
+    "Cordoba",
+    "Buenos Aires",
+    "Santa Fe",
+    "Salta",
+    "Jujuy",
+    "Chaco",
+    "Entre Rios"
+]
+
+CITIES = [
+    "La Plata",
+    "Salsipuedes",
+    "Bariloche",
+    "Ushuaia",
+    "San Roque"
+]
+
+SCHOOLS = [
+    "EET 13",
+    "San Agustin",
+    "Colegio Nacional",
+    "Escuela Normal 2",
+    "Escuela provincial 5"
+]
+
+LEVELS = [
+    "primario",
+    "secundario",
+    "terciario"
+]
+
+DEFAULTS = {
+    "lines": 5,
+    "output": ""
+}
+##_________________________________________________---
+import argparse
+import sys
+from random import choice
+
+#___ HELPERS ______________________________________
+def __get_random_csv_line():
+    '''
+    Creates and return a sample csv line in the form:
+    <province>;<city>;<school>;<level>
+    using sample values defined in constants section
+    '''
+    return "{};{};{};{}".format(choice(PROVINCES), choice(CITIES),
+        choice(SCHOOLS), choice(LEVELS))
+##____________________________________________________--
+
+##___Arguments handling ______________________________
+argument_parser = argparse.ArgumentParser()
+
+argument_parser.add_argument("-l", "--lines", required=False, type=int, default=DEFAULTS["lines"],
+    help="number of lines to generate. when not suplied {} lines are generated".format(DEFAULTS["lines"]))
+
+argument_parser.add_argument("-o", "--output", required=False, default=DEFAULTS["output"],
+    help="csv filename to write. Uses stdout if no supplied")
+
+args = vars(argument_parser.parse_args())
+
+lines = args['lines']
+filename = args['output'] 
+#_____________________________________________________
+
+
+
+# main
+csv_file = open(filename, "w+") if filename else sys.stdout
+for i in range(lines):
+    csv_file.write(__get_random_csv_line()+"\r\n")
+csv_file.close()
